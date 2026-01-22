@@ -1,5 +1,5 @@
 "use client"
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Eye, EyeOff, ShoppingBag, Snowflake } from 'lucide-react';
 import { useRouter } from "next/navigation";
 import { setAccessToken } from '@/redux/slices/authSlice';
@@ -15,6 +15,12 @@ export default function FastChillLogin() {
     email?: string;
     password?: string;
   }>({});
+  useEffect(() => {
+    const hasRefreshToken = document.cookie.includes("refresh_token=");
+    if (hasRefreshToken) {
+      router.replace("/admin"); // 👈 IMPORTANT (replace, not push)
+    }
+  }, [router]);
 
   const handleSubmit = async () => {
     setErrors({});
@@ -28,7 +34,7 @@ export default function FastChillLogin() {
     }
 
     try {
-      const res = await fetch("/api/login", {
+      const res = await fetch("/api/admin/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

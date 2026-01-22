@@ -14,7 +14,7 @@ import {
   Layers, Tag
 } from "lucide-react";
 import { useDispatch } from "react-redux";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { logout } from "@/redux/slices/authSlice";
 
 export default  function AdminLayout({ children }: { children: React.ReactNode }) {
