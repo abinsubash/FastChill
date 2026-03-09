@@ -15,12 +15,12 @@ function generateSlug(name: string): string {
 // UPDATE Category
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectDB();
 
-    const { id } = params;
+    const { id } = await params;
     const { name } = await request.json();
 
     // Validation
