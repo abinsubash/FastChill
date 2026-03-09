@@ -7,7 +7,7 @@ import { uploadImage, deleteImage, extractS3Key } from "@/lib/s3";
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectDB();
