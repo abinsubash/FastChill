@@ -23,7 +23,7 @@ interface LowStockProduct {
   id: string;
   name: string;
   stock: number;
-  category: string;
+  category: { name: string };
 }
 
 export default function AdminHomePage() {

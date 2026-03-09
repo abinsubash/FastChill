@@ -4,6 +4,7 @@ import Product from "@/models/products";
 // Static imports so Mongoose registers schemas BEFORE any .populate() runs
 import Category from "@/models/category";
 import Brand from "@/models/brand";
+import { SortOrder } from "mongoose";
 
 export async function GET(request: NextRequest) {
   try {
@@ -39,12 +40,12 @@ export async function GET(request: NextRequest) {
     if (inStock) query.stock = { $gt: 0 };
 
     // Build sort
-    const sortMap: Record<string, object> = {
-      "price-low":  { sellingPrice: 1 },
-      "price-high": { sellingPrice: -1 },
-      "name":       { name: 1 },
-      "newest":     { createdAt: -1 },
-    };
+ const sortMap: Record<string, Record<string, SortOrder>> = {  // ✅ fixed type
+  "price-low":  { sellingPrice: 1 },
+  "price-high": { sellingPrice: -1 },
+  "name":       { name: 1 },
+  "newest":     { createdAt: -1 },
+};
     const sort = sortMap[sortBy] ?? { createdAt: -1 };
 
     const skip = (page - 1) * limit;

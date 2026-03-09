@@ -144,7 +144,7 @@ export async function GET(request: NextRequest) {
           product: isPopulated 
             ? item.product._id.toString() 
             : item.product.toString(),
-          name: item.name || (isPopulated ? item.product.name : 'Unknown Product'),
+          name: item.name || (isPopulated ?  (item.product as PopulatedProduct).name : 'Unknown Product'),
           quantity: item.quantity,
           price: item.price,
           total: item.total,

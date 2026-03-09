@@ -42,37 +42,33 @@ export async function GET(request: NextRequest) {
       allBrands,
       allCategories,
     ] = await Promise.all([
-      Product.find({ isActive: true })
-        .populate("category", "name")
-        .populate("brand", "name")
-        .lean(),
-      Bill.find().lean(),
-      Bill.find({ createdAt: { $gte: startDate } }).lean(),
-      Complaint.find().lean(),
-      Complaint.find({ createdAt: { $gte: startDate } }).lean(),
-      Brand.find({ isActive: true }).lean(),
-      Category.find({ isActive: true }).lean(),
-    ]);
-
+      Product.find({ isActive: true }).populate("category", "name").populate("brand", "name").lean() as Promise<any[]>,
+      Bill.find().lean() as Promise<any[]>,
+      Bill.find({ createdAt: { $gte: startDate } }).lean() as Promise<any[]>,
+      Complaint.find().lean() as Promise<any[]>,
+      Complaint.find({ createdAt: { $gte: startDate } }).lean() as Promise<any[]>,
+      Brand.find({ isActive: true }).lean() as Promise<any[]>,
+      Category.find({ isActive: true }).lean() as Promise<any[]>,
+    ]) as [any[], any[], any[], any[], any[], any[], any[]];
     // ============ REVENUE CALCULATIONS ============
     const totalRevenue = billsInRange.reduce((sum, bill) => sum + bill.grandTotal, 0);
     const previousPeriodStart = new Date(startDate);
     previousPeriodStart.setTime(previousPeriodStart.getTime() - (now.getTime() - startDate.getTime()));
-    
+
     const previousBills = await Bill.find({
       createdAt: { $gte: previousPeriodStart, $lt: startDate }
     }).lean();
-    
+
     const previousRevenue = previousBills.reduce((sum, bill) => sum + bill.grandTotal, 0);
-    const revenueChange = previousRevenue > 0 
-      ? ((totalRevenue - previousRevenue) / previousRevenue) * 100 
+    const revenueChange = previousRevenue > 0
+      ? ((totalRevenue - previousRevenue) / previousRevenue) * 100
       : totalRevenue > 0 ? 100 : 0;
 
     // ============ ORDERS CALCULATIONS ============
     const totalOrders = billsInRange.length;
     const previousOrders = previousBills.length;
-    const ordersChange = previousOrders > 0 
-      ? ((totalOrders - previousOrders) / previousOrders) * 100 
+    const ordersChange = previousOrders > 0
+      ? ((totalOrders - previousOrders) / previousOrders) * 100
       : totalOrders > 0 ? 100 : 0;
 
     // ============ CUSTOMERS CALCULATIONS ============
@@ -82,21 +78,21 @@ export async function GET(request: NextRequest) {
     const previousCustomers = new Set(
       previousBills.map(bill => bill.customerPhone || bill.customerName)
     ).size;
-    const customersChange = previousCustomers > 0 
-      ? ((uniqueCustomers - previousCustomers) / previousCustomers) * 100 
+    const customersChange = previousCustomers > 0
+      ? ((uniqueCustomers - previousCustomers) / previousCustomers) * 100
       : uniqueCustomers > 0 ? 100 : 0;
 
     // ============ PRODUCTS SOLD CALCULATIONS ============
-    const productsSold = billsInRange.reduce(
-      (sum, bill) => sum + bill.items.reduce((itemSum, item) => itemSum + item.quantity, 0),
-      0
-    );
-    const previousProductsSold = previousBills.reduce(
-      (sum, bill) => sum + bill.items.reduce((itemSum, item) => itemSum + item.quantity, 0),
-      0
-    );
-    const productsSoldChange = previousProductsSold > 0 
-      ? ((productsSold - previousProductsSold) / previousProductsSold) * 100 
+const productsSold = billsInRange.reduce(
+  (sum: number, bill: any) => sum + bill.items.reduce((itemSum: number, item: any) => itemSum + item.quantity, 0),
+  0
+);
+const previousProductsSold = previousBills.reduce(
+  (sum: number, bill: any) => sum + bill.items.reduce((itemSum: number, item: any) => itemSum + item.quantity, 0),
+  0
+);
+    const productsSoldChange = previousProductsSold > 0
+      ? ((productsSold - previousProductsSold) / previousProductsSold) * 100
       : productsSold > 0 ? 100 : 0;
 
     // ============ COMPLAINTS CALCULATIONS ============
@@ -106,8 +102,8 @@ export async function GET(request: NextRequest) {
       createdAt: { $gte: previousPeriodStart, $lt: startDate }
     }).lean();
     const previousComplaints = previousComplaintsData.length;
-    const complaintsChange = previousComplaints > 0 
-      ? ((totalComplaints - previousComplaints) / previousComplaints) * 100 
+    const complaintsChange = previousComplaints > 0
+      ? ((totalComplaints - previousComplaints) / previousComplaints) * 100
       : totalComplaints > 0 ? 100 : 0;
 
     // ============ AVERAGE ORDER VALUE ============
@@ -253,9 +249,9 @@ export async function GET(request: NextRequest) {
     // ============ TOP PRODUCTS ============
     // Calculate product sales from bills
     const productSalesMap = new Map();
-    
+
     billsInRange.forEach(bill => {
-      bill.items.forEach(item => {
+      bill.items.forEach((item:any) => {
         const productId = item.product.toString();
         if (!productSalesMap.has(productId)) {
           productSalesMap.set(productId, {
@@ -296,19 +292,19 @@ export async function GET(request: NextRequest) {
 
     // ============ CATEGORY DISTRIBUTION ============
     const categoryMap = new Map();
-    
+
     billsInRange.forEach(bill => {
-      bill.items.forEach(item => {
+      bill.items.forEach((item:any) => {
         const productId = item.product.toString();
         const product = allProducts.find(p => p._id.toString() === productId);
         const categoryName = product?.category?.name || 'Others';
-        
+
         categoryMap.set(categoryName, (categoryMap.get(categoryName) || 0) + item.quantity);
       });
     });
 
     const totalCategorySales = Array.from(categoryMap.values()).reduce((sum, val) => sum + val, 0);
-    
+
     const categoryColors = ['#22d3ee', '#3b82f6', '#8b5cf6', '#f97316', '#ec4899', '#10b981', '#f59e0b'];
     const categoryData = Array.from(categoryMap.entries())
       .map(([name, count], index) => ({
@@ -381,13 +377,13 @@ export async function GET(request: NextRequest) {
 
     // ============ BRAND PERFORMANCE ============
     const brandMap = new Map();
-    
+
     billsInRange.forEach(bill => {
-      bill.items.forEach(item => {
+      bill.items.forEach((item:any) => {
         const productId = item.product.toString();
         const product = allProducts.find(p => p._id.toString() === productId);
         const brandName = product?.brand?.name || 'Unknown';
-        
+
         if (!brandMap.has(brandName)) {
           brandMap.set(brandName, { sales: 0, revenue: 0 });
         }

@@ -47,8 +47,9 @@ interface ApiResponse {
 
 interface AllProductsResponse {
   success: boolean;
-  products: Product[];
-  count: number;
+  products: Product[];  // your existing product type
+  count?: number;
+  message?: string;     // ✅ add this — it's optional since it only appears on error
 }
 
 export default function ShopPage() {
