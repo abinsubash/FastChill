@@ -1,7 +1,7 @@
 import { connectDB } from "@/lib/db";
 import { comparePassword } from "@/lib/hash";
 import { generateAccess_token, generateRefresh_token } from "@/lib/jwt";
-import AdminModel from "@/model/admin";
+import AdminModel from "@/models/admin";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {

@@ -29,7 +29,7 @@ export default  function AdminLayout({ children }: { children: React.ReactNode }
     { name: "Categories", path: "/admin/categories", icon: Layers },
     { name: "Brands", path: "/admin/brands", icon: Tag },
     { name: "Sales & Billing", path: "/admin/sales", icon: DollarSign },
-    { name: "Repair & Service", path: "/admin/repair", icon: Wrench },
+    { name: "Repair & Service", path: "/admin/complaints", icon: Wrench },
     { name: "Analytics / Reports", path: "/admin/reports", icon: BarChart },
   ];
   const  handleLogout = async () => {

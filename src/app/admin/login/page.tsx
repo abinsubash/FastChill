@@ -18,7 +18,7 @@ export default function FastChillLogin() {
   useEffect(() => {
     const hasRefreshToken = document.cookie.includes("refresh_token=");
     if (hasRefreshToken) {
-      router.replace("/admin"); // 👈 IMPORTANT (replace, not push)
+      router.replace("/admin");
     }
   }, [router]);
 
